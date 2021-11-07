@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#806363"
+    >
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textSize="24sp"
+    android:text="Johny Land"
+    android:textColor="@color/teal_700"
+    android:layout_centerHorizontal="true"
+    android:id="@+id/enter_TXT_title"
+    ></TextView>
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/enter_LBL_password"
+        android:layout_centerHorizontal="true"
+        android:hint="Password"
+        android:layout_below="@id/enter_TXT_title"
+        android:textColorHint="@color/teal_700"
+        ></EditText>
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/enter_TXT_begin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/enter_IMG_image"
+        android:layout_marginTop="80dp"
+        android:textSize="14sp"
+        android:textColor="@color/white"
+        android:text="You have 3 choices For Login:\n1.Align the Phone to the North
+than click login\n2.Match the correct pattern with
+ the battery level (perfix with 0)\n3.Write My Title than click login"
+        ></androidx.appcompat.widget.AppCompatTextView>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/enter_BTN_login"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/enter_LBL_password"
+        android:text="Login"
+
+        ></Button>
+    <ImageView
+        android:layout_width="150dp"
+        android:id="@+id/enter_IMG_image"
+        android:layout_height="150dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/enter_BTN_login"
+        android:src="@drawable/img_compass"
+        ></ImageView>
+
+    <TextView
+        android:id="@+id/enter_TXT_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/enter_IMG_image"
+        android:layout_centerHorizontal="true"
+        ></TextView>
+
+
+
+
+    <com.andrognito.patternlockview.PatternLockView
+        android:layout_below="@+id/enter_TXT_info"
+        android:id="@+id/enter_PTR_lock"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_marginTop="50dp"
+        android:layout_centerHorizontal="true"
+        />
+</RelativeLayout>

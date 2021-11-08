@@ -31,9 +31,5 @@ public class LoginActivity extends AppCompatActivity {
 
 
 
-    public void goToSignup(View v) {
-        // Open your SignUp Activity if the user wants to signup
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-    }
+
 }

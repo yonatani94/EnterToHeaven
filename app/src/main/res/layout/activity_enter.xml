@@ -21,6 +21,7 @@
         android:id="@+id/enter_LBL_password"
         android:layout_centerHorizontal="true"
         android:hint="Password"
+        android:inputType="number"
         android:layout_below="@id/enter_TXT_title"
         android:textColorHint="@color/teal_700"
         ></EditText>
@@ -29,30 +30,44 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toLeftOf="@+id/enter_IMG_image"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="50dp"
         android:textSize="14sp"
         android:textColor="@color/white"
         android:text="You have 3 choices For Login:\n1.Align the Phone to the North
-than click login\n2.Match the correct pattern with
- the battery level (perfix with 0)\n3.Write My Title than click login"
+than Click me\n2.Match the correct pattern with
+ the number of day week \n3.Write battery level than click login"
         ></androidx.appcompat.widget.AppCompatTextView>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/enter_BTN_login"
+        android:layout_below="@+id/enter_LBL_password"
+        android:layout_centerHorizontal="true"
+        android:text="Login"
+        android:layout_marginBottom="20dp"
+        ></Button>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/enter_BTN_click"
+        android:text="ClickMe"
+        android:layout_toRightOf="@+id/enter_BTN_login"
+        android:layout_marginBottom="20dp"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/enter_LBL_password"
-        android:text="Login"
-
+        android:layout_marginLeft="20dp"
+        android:visibility="invisible"
         ></Button>
+
     <ImageView
-        android:layout_width="150dp"
         android:id="@+id/enter_IMG_image"
+        android:layout_width="150dp"
         android:layout_height="150dp"
+        android:layout_below="@id/enter_BTN_click"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/enter_BTN_login"
-        android:src="@drawable/img_compass"
-        ></ImageView>
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="40dp"
+        android:src="@drawable/img_compass"></ImageView>
 
     <TextView
         android:id="@+id/enter_TXT_info"
@@ -60,6 +75,7 @@ than click login\n2.Match the correct pattern with
         android:layout_height="wrap_content"
         android:layout_below="@+id/enter_IMG_image"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
         ></TextView>
 
 

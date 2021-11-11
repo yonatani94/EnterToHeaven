@@ -5,15 +5,34 @@
     android:layout_height="match_parent"
     android:background="#806363"
     >
-<TextView
+
+    <ImageView
+        android:id="@+id/enter_IMG_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"></ImageView>
+
+    <TextView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:textSize="24sp"
-    android:text="Johny Land"
+    style="@style/TextAppearance.AppCompat.Widget.ActionMode.Title"
+    android:text="Enter To Heaven"
     android:textColor="@color/teal_700"
     android:layout_centerHorizontal="true"
     android:id="@+id/enter_TXT_title"
     ></TextView>
+    <TextView
+        android:id="@+id/enter_TXT_counter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/enter_TXT_title"
+        android:textColor="#FF0000"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        ></TextView>
 
     <EditText
         android:layout_width="wrap_content"
@@ -22,21 +41,45 @@
         android:layout_centerHorizontal="true"
         android:hint="Password"
         android:inputType="number"
-        android:layout_below="@id/enter_TXT_title"
+        android:layout_below="@id/enter_TXT_counter"
         android:textColorHint="@color/teal_700"
         ></EditText>
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/enter_TXT_begin"
+    <Button
+        android:id="@+id/enter_BTN_hint1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toLeftOf="@+id/enter_IMG_image"
-        android:layout_marginTop="50dp"
-        android:textSize="14sp"
-        android:textColor="@color/white"
-        android:text="You have 3 choices For Login:\n1.Align the Phone to the North
-than Click me\n2.Match the correct pattern with
- the number of day week \n3.Write battery level than click login"
-        ></androidx.appcompat.widget.AppCompatTextView>
+        android:layout_toLeftOf="@+id/enter_PTR_lock"
+        android:background="@drawable/rounded_rectangle"
+        android:layout_marginTop="30dp"
+        android:tag="hint1"
+        android:text="Hint1"
+        ></Button>
+    <Button
+        android:id="@+id/enter_BTN_hint2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/enter_PTR_lock"
+        android:layout_centerVertical="true"
+        android:background="@drawable/rounded_rectangle"
+        android:text="Hint2"
+        android:layout_below="@+id/enter_BTN_hint1"
+        android:layout_marginTop="10dp"
+        android:tag="hint2"
+
+        ></Button>
+    <Button
+        android:id="@+id/enter_BTN_hint3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/enter_PTR_lock"
+        android:layout_centerVertical="true"
+        android:background="@drawable/rounded_rectangle"
+        android:text="Hint3"
+        android:layout_marginTop="10dp"
+        android:tag="hint3"
+        android:layout_below="@+id/enter_BTN_hint2"
+        ></Button>
+
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -44,6 +87,7 @@ than Click me\n2.Match the correct pattern with
         android:layout_below="@+id/enter_LBL_password"
         android:layout_centerHorizontal="true"
         android:text="Login"
+        android:tag="login"
         android:layout_marginBottom="20dp"
         ></Button>
     <Button
@@ -73,6 +117,7 @@ than Click me\n2.Match the correct pattern with
         android:id="@+id/enter_TXT_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/black"
         android:layout_below="@+id/enter_IMG_image"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
@@ -89,4 +134,6 @@ than Click me\n2.Match the correct pattern with
         android:layout_marginTop="50dp"
         android:layout_centerHorizontal="true"
         />
+
+
 </RelativeLayout>

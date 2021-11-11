@@ -13,7 +13,6 @@ import com.google.android.material.textview.MaterialTextView;
 
 public class LoginActivity extends AppCompatActivity {
    private MaterialTextView login_LBL_title;
-    final int MIN_PASSWORD_LENGTH = 6;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

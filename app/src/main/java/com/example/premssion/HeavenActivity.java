@@ -3,7 +3,6 @@ package com.example.premssion;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatTextView;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -41,48 +40,52 @@ public class HeavenActivity extends AppCompatActivity implements SensorEventList
     private TextView enter_TXT_info, enter_TXT_title,enter_TXT_counter;
     private EditText enter_LBL_password;
     private Button enter_BTN_login,enter_BTN_click,enter_BTN_hint1,enter_BTN_hint2,enter_BTN_hint3;
-    // record the compass picture angle turned
     private SensorManager mSensorManager;
-    private String heartRateValue;
-    private float currentDegree = 0f;
+    private Sensor accelerometerSensor, magnetometerSensor;
     private int day;
     private PatternLockView enter_PTR_lock;
     private int battery= 0 ,counter = 5;
-
-
     private AlertDialog  alertDialog;
-    //private acceleration vector
-    private float[] floatGravity = new float[3];
-    private float[] floatGeoMagnetic = new float[3];
-
+    private float currentDegree = 0f;
     private float[] floatOrientation = new float[3];
     private float[] floatRotationMatrix = new float[9];
-
-
-    private float[] gravityValues = null ;
-    private float[] magneticValues =null ;
+    private float[] lastAccelerometer = new float[3];
+    private float[] lastMagnetometer = new float[3];
+    boolean isLastAcc = false;
+    boolean isLastMag = false;
+    long lastUpdateTime = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_enter);
+        setContentView(R.layout.activity_heaven);
 
         findViews();
         addPIcWithGlide();
-
-        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        intiSensors();
         initCalender();
-
+        initBTN();
         checkCounter();
+        initPatternAndBattery();
 
+    }
+
+    private void initPatternAndBattery() {
         enter_PTR_lock.addPatternLockListener(this);
         battery = getBatteryPercentage(this);
+    }
 
+    private void initBTN() {
         enter_BTN_login.setOnClickListener(clickListener);
         enter_BTN_hint1.setOnClickListener(clickListener);
         enter_BTN_hint2.setOnClickListener(clickListener);
         enter_BTN_hint3.setOnClickListener(clickListener);
+    }
 
+    private void intiSensors() {
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        accelerometerSensor=mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        magnetometerSensor=mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
     }
 
     private void initCalender() {
@@ -91,8 +94,8 @@ public class HeavenActivity extends AppCompatActivity implements SensorEventList
     }
 
     private void checkCounter() {
-        enter_TXT_counter.setText(String.valueOf(counter)+ " attempts left");
-        if(counter==0)
+        enter_TXT_counter.setText(counter+ " attempts left");
+        if(counter<1)
         {
             goToHell();
         }
@@ -104,6 +107,12 @@ public class HeavenActivity extends AppCompatActivity implements SensorEventList
                 .load(R.drawable.background)
                 .centerCrop()
                 .into(enter_IMG_background);
+        Glide
+                .with(HeavenActivity.this)
+                .load(R.drawable.compass)
+                .centerCrop()
+                .into(enter_IMG_image);
+
 
     }
     private View.OnClickListener clickListener = new View.OnClickListener() {
@@ -111,37 +120,41 @@ public class HeavenActivity extends AppCompatActivity implements SensorEventList
         public void onClick(View v) {
             if (v.getTag().toString().equals("hint1"))
             {
-                showHint(alertDialog,"Hint 1","align the phone to the north than click me");
+                showHint("Hint 1","align the phone to the north than click me");
             }
             else if(v.getTag().toString().equals("hint2"))
             {
-                showHint(alertDialog,"Hint 2","Write Your Battery Life");
+                showHint("Hint 2","Write Your Battery Life");
 
             }
             else if(v.getTag().toString().equals("hint3"))
             {
-                showHint(alertDialog,"Hint 3","draw the day of the week(number)");
+                showHint("Hint 3","draw the day of the week(number)");
 
             }
             else if(v.getTag().toString().equals("login"))
             {
                 checkEditText(battery);
             }
+            else if(v.getTag().toString().equals("click"))
+            {
+              goToLogin();
+            }
         }
     };
 
-    private void showHint(AlertDialog alert, String title, String msg) {
-        alert = new AlertDialog.Builder(HeavenActivity.this).create();
+    private void showHint(String title, String msg) {
+        alertDialog = new AlertDialog.Builder(HeavenActivity.this).create();
 
-        alert.setMessage(msg);
-        alert.setTitle(title);
-        alert.setButton(AlertDialog.BUTTON_NEUTRAL, "ok", new DialogInterface.OnClickListener() {
+        alertDialog.setMessage(msg);
+        alertDialog.setTitle(title);
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }
         });
-        alert.show();
+        alertDialog.show();
     }
 
 
@@ -154,7 +167,7 @@ public class HeavenActivity extends AppCompatActivity implements SensorEventList
         else
         {
             Toast.makeText(getApplicationContext(), "Password Wrong", Toast.LENGTH_LONG).show();
-            counter-=1;
+            reduceCounter();
             checkCounter();
         }
 
@@ -191,8 +204,6 @@ public class HeavenActivity extends AppCompatActivity implements SensorEventList
                 SensorManager.SENSOR_DELAY_GAME);
         mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
                 SensorManager.SENSOR_DELAY_GAME);
-        mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION),
-                SensorManager.SENSOR_DELAY_GAME);
         battery = getBatteryPercentage(this);
         checkCounter();
 
@@ -202,7 +213,6 @@ public class HeavenActivity extends AppCompatActivity implements SensorEventList
     protected void onPause() {
         super.onPause();
         battery = getBatteryPercentage(this);
-
         // to stop the listener and save battery
         mSensorManager.unregisterListener(this);
     }
@@ -210,92 +220,52 @@ public class HeavenActivity extends AppCompatActivity implements SensorEventList
 
     public void onSensorChanged(SensorEvent event) {
 
-
-        if(event.sensor.getType()==Sensor.TYPE_ORIENTATION)
-        {
-            updateAngle(event.values[0]);
+        if (event.sensor == accelerometerSensor) {
+            System.arraycopy(event.values,0,lastAccelerometer,0,event.values.length);
+            isLastAcc=true;
         }
-      /*  if(event.sensor.getType()==Sensor.TYPE_MAGNETIC_FIELD) {
-            floatGeoMagnetic = event.values;
-
-            SensorManager.getRotationMatrix(floatRotationMatrix, null, floatGravity, floatGeoMagnetic);
+        else if(event.sensor == magnetometerSensor) {
+            System.arraycopy(event.values, 0, lastMagnetometer, 0, event.values.length);
+            isLastMag = true;
+        }
+        if(isLastAcc && isLastMag && System.currentTimeMillis()-lastUpdateTime > 250){
+            SensorManager.getRotationMatrix(floatRotationMatrix, null, lastAccelerometer, lastMagnetometer);
             SensorManager.getOrientation(floatRotationMatrix, floatOrientation);
 
-            enter_IMG_image.setRotation((float) (-floatOrientation[0]*180/3.14159));
-
-        }*/
-       if(event.sensor.getType()==Sensor.TYPE_ACCELEROMETER) {
-            floatGravity = event.values;
-
-            SensorManager.getRotationMatrix(floatRotationMatrix, null, floatGravity, floatGeoMagnetic);
-            SensorManager.getOrientation(floatRotationMatrix, floatOrientation);
-
-            enter_IMG_image.setRotation((float) (-floatOrientation[0] * 180 / 3.14159));
-
+            float azimuthInRadians = floatOrientation[0];
+            float azimuthInDegree = (float)Math.toDegrees(azimuthInRadians);
+            updateAngle(azimuthInDegree);
         }
 
-/*        if ((gravityValues != null) && (magneticValues != null)
-                && (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)) {
-
-            float[] deviceRelativeAcceleration = new float[4];
-            deviceRelativeAcceleration[0] = event.values[0];
-            deviceRelativeAcceleration[1] = event.values[1];
-            deviceRelativeAcceleration[2] = event.values[2];
-            deviceRelativeAcceleration[3] = 0;
-
-            // Change the device relative acceleration values to earth relative values
-            // X axis -> East
-            // Y axis -> North Pole
-            // Z axis -> Sky
-
-            float[] R = new float[16], I = new float[16], earthAcc = new float[16];
-
-            SensorManager.getRotationMatrix(R, I, gravityValues, magneticValues);
-
-            float[] inv = new float[16];
-
-            android.opengl.Matrix.invertM(inv, 0, R, 0);
-            android.opengl.Matrix.multiplyMV(earthAcc, 0, inv, 0, deviceRelativeAcceleration, 0);
-            Log.d("johny", "Acceleration Values: (" + earthAcc[0] + ", " + earthAcc[1] + ", " + earthAcc[2] + ")");
-
-        } else if (event.sensor.getType() == Sensor.TYPE_GRAVITY) {
-            gravityValues = event.values;
-        } else if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
-            magneticValues = event.values;
-            enter_TXT_info.setText(String.valueOf(magneticValues));
-        }*/
     }
 
     private void updateAngle(float value) {
-        float degree = Math.round(value);
-
-        enter_TXT_info.setText("Heading: " + Float.toString(degree) + " degrees");
-
+        
         // create a rotation animation (reverse turn degree degrees)
         RotateAnimation ra = new RotateAnimation(
                 currentDegree,
-                -degree,
+                -value,
                 Animation.RELATIVE_TO_SELF, 0.5f,
                 Animation.RELATIVE_TO_SELF,
                 0.5f);
 
         // how long the animation will take place
-        ra.setDuration(240);
+        ra.setDuration(250);
 
         // set the animation after the end of the reservation status
         ra.setFillAfter(true);
 
         // Start the animation
         enter_IMG_image.startAnimation(ra);
-        currentDegree = -degree;
+
+        currentDegree = -value;
+        lastUpdateTime = System.currentTimeMillis();
+        int x = (int)value;
+        enter_TXT_info.setText(x+  "°");
+
         if (currentDegree == 0 ) {
             enter_BTN_click.setVisibility(View.VISIBLE);
-            enter_BTN_click.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    goToLogin();
-                }
-            });
+            enter_BTN_click.setOnClickListener(clickListener);
         }
         else
         {
@@ -346,26 +316,34 @@ public class HeavenActivity extends AppCompatActivity implements SensorEventList
                 break;
             case Calendar.FRIDAY:
                 matchPatterns(pattern,"0367854");
+                matchPatterns(pattern,"036754");
+                matchPatterns(pattern,"14785");
                 break;
             case Calendar.SATURDAY:
                 matchPatterns(pattern,"01258");
                 break;
+
         }
+
+        reduceCounter();
+        checkCounter();
     }
 
     private void matchPatterns(List<PatternLockView.Dot> pattern, String s) {
-        if (PatternLockUtils.patternToString(enter_PTR_lock, pattern).equalsIgnoreCase(s)) {
+        if (PatternLockUtils.patternToString(enter_PTR_lock, pattern).equalsIgnoreCase(s) ) {
             enter_PTR_lock.setViewMode(PatternLockView.PatternViewMode.CORRECT);
             Toast.makeText(this, "Pattern Correct", Toast.LENGTH_LONG).show();
             goToLogin();
-
         } else {
             enter_PTR_lock.setViewMode(PatternLockView.PatternViewMode.WRONG);
             Toast.makeText(this, "Pattern Wrong", Toast.LENGTH_LONG).show();
-            counter-=1;
-            checkCounter();
+
 
         }
+    }
+
+    private void reduceCounter() {
+        counter= counter-1;
     }
 
     public void goToHell() {

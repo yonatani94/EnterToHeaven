@@ -6,14 +6,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#FFFFFF"
     tools:context=".LoginActivity">
-
+    <ImageView
+        android:id="@+id/login_IMG_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"></ImageView>
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/login_LBL_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
         android:textSize="24sp"
-        android:layout_marginTop="100dp"
-        android:text="You Are Login Successful"
+        android:layout_marginLeft="20dp"
+        android:textColor="#EF2121"
+        android:textStyle="bold"
+        android:text="You Are Login Successful \nYour Place In Heaven Has Saved"
         />
        ></RelativeLayout>

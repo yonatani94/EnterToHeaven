@@ -45,7 +45,6 @@ public class HeavenActivity extends AppCompatActivity implements SensorEventList
     private int day;
     private PatternLockView enter_PTR_lock;
     private int battery= 0 ,counter = 5;
-    private AlertDialog  alertDialog;
     private float currentDegree = 0f;
     private float[] floatOrientation = new float[3];
     private float[] floatRotationMatrix = new float[9];
@@ -134,6 +133,7 @@ public class HeavenActivity extends AppCompatActivity implements SensorEventList
             }
             else if(v.getTag().toString().equals("login"))
             {
+                battery = getBatteryPercentage(getApplicationContext());
                 checkEditText(battery);
             }
             else if(v.getTag().toString().equals("click"))
@@ -144,16 +144,11 @@ public class HeavenActivity extends AppCompatActivity implements SensorEventList
     };
 
     private void showHint(String title, String msg) {
-        alertDialog = new AlertDialog.Builder(HeavenActivity.this).create();
+        AlertDialog alertDialog = new AlertDialog.Builder(HeavenActivity.this).create();
 
         alertDialog.setMessage(msg);
         alertDialog.setTitle(title);
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "ok", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "ok", (dialog, which) -> dialog.dismiss());
         alertDialog.show();
     }
 
@@ -212,7 +207,6 @@ public class HeavenActivity extends AppCompatActivity implements SensorEventList
     @Override
     protected void onPause() {
         super.onPause();
-        battery = getBatteryPercentage(this);
         // to stop the listener and save battery
         mSensorManager.unregisterListener(this);
     }
@@ -240,7 +234,7 @@ public class HeavenActivity extends AppCompatActivity implements SensorEventList
     }
 
     private void updateAngle(float value) {
-        
+
         // create a rotation animation (reverse turn degree degrees)
         RotateAnimation ra = new RotateAnimation(
                 currentDegree,
@@ -260,10 +254,10 @@ public class HeavenActivity extends AppCompatActivity implements SensorEventList
 
         currentDegree = -value;
         lastUpdateTime = System.currentTimeMillis();
-        int x = (int)value;
+        int x = Math.round(value);
         enter_TXT_info.setText(x+  "°");
 
-        if (currentDegree == 0 ) {
+        if (x == 0 ) {
             enter_BTN_click.setVisibility(View.VISIBLE);
             enter_BTN_click.setOnClickListener(clickListener);
         }
@@ -363,12 +357,13 @@ public class HeavenActivity extends AppCompatActivity implements SensorEventList
     }
     public  int getBatteryPercentage(Context context) {
 
-        if (Build.VERSION.SDK_INT >= 21) {
-
+      /*  if (Build.VERSION.SDK_INT >= 21) {
+            Log.d("johny", "getBatteryPercentage: sdk over 21" );
             BatteryManager bm = (BatteryManager) context.getSystemService(BATTERY_SERVICE);
-            return bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+            return bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_NOW);
 
-        } else {
+        } else {*/
+            Log.d("johny", "getBatteryPercentage: sdk less 21" );
 
             IntentFilter iFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
             Intent batteryStatus = context.registerReceiver(null, iFilter);
@@ -379,6 +374,6 @@ public class HeavenActivity extends AppCompatActivity implements SensorEventList
             double batteryPct = level / (double) scale;
 
             return (int) (batteryPct * 100);
-        }
+      //  }
     }
 }
